@@ -1,6 +1,7 @@
 import controlflow as cf
 from prefect import get_run_logger
 import json
+import requests
 
 classifier = cf.Agent(
     name="Classifier",
@@ -42,6 +43,30 @@ classifier = cf.Agent(
 )
 
 @cf.flow
+def reject_calendar_event(event_id):
+    url = 'https://eokrg9t885swr3y.m.pipedream.net/'
+    data = {
+        'event_id': event_id,
+        'test': 'event'
+    }
+    
+    response = requests.post(url, json=data)
+    
+    try:
+        # Attempt to parse JSON only if the response content type is application/json
+        if response.headers.get('Content-Type') == 'application/json':
+            response_data = response.json()
+            print("Successfully sent data to PipeDream.")
+            print("Response:", response_data)
+        else:
+            print("Successfully sent data, but response is not JSON.")
+            print("Status Code:", response.status_code)
+            print("Response Body:", response.text)
+    except requests.exceptions.JSONDecodeError as e:
+        print(f"Failed to decode JSON. Status code: {response.status_code}, Response: {response.text}")
+
+
+@cf.flow
 def classify_calendar_event(event_json: str):
   logger = get_run_logger()
   logger.info(f"Classifying event: {event_json}")
@@ -56,6 +81,10 @@ def classify_calendar_event(event_json: str):
   )
 
   logger.info(f"Is spam: {is_spam}")
+
+  if is_spam:
+    reject_calendar_event(event['event_id'])
+
 
 if __name__ == "__main__":
   classify_calendar_event.serve(
