@@ -12,7 +12,7 @@ classifier = cf.Agent(
 
         ONLY consider the `description` and `invitee_email` fields when classifying the event. Disregard all other fields.
 
-        Categorize the event as spam if:
+        Categorize the event as spam if ANY of these are true:
         - `invitee_email` does not use a legitimate email domain
         - `description` is extremely vague and consists of only one word.
         - `description` doesn't provide any context about the purpose of the meeting or event.
@@ -26,7 +26,7 @@ classifier = cf.Agent(
         email: johnny@boeing.com, description: saturday night meet me on the town
         ```
 
-        Categorize the event as not spam if:
+        Categorize the event as not spam if ALL of these are true:
         - `invitee_email` uses a legitimate business email domain
         - `description` provides context about the purpose of the meeting or event
         - `description` contains references to Data Engineering, Data Science, Machine Learning, Helm, Kubernetes
