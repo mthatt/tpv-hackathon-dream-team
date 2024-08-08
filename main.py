@@ -28,6 +28,7 @@ classifier = cf.Agent(
 
 @cf.flow
 def classify_calendar_event(event_json: str):
+  # Event JSON schema: {"description": str, "created_date": str, "event_name": str, "invitee_email": str, "event_id": str}
   event = json.loads(event_json)
 
   is_spam = cf.Task(
