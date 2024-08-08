@@ -1,4 +1,5 @@
 import controlflow as cf
+import json
 
 classifier = cf.Agent(
     name="Classifier",
@@ -26,8 +27,8 @@ classifier = cf.Agent(
 )
 
 @cf.flow
-def classify_calendar_event():
-  event = {}
+def classify_calendar_event(event_json: str):
+  event = json.loads(event_json)
 
   is_spam = cf.Task(
     "Classify the following calendar event to determine if it is submitted by a spammer",
@@ -35,5 +36,7 @@ def classify_calendar_event():
     context=dict(event=event),
     agents=[classifier],
   )
+
+  print(is_spam)
 
 
